@@ -1,0 +1,17 @@
+{
+    "TR_BLOCK": "0000",
+    "BER": 255,
+    "SIGNAL_POWER": 107,
+    "NOISE_POWER": 107,
+    "PACKET_VALID": 2,
+    "PACKET_INVALID": 0,
+    "GIT_REV": "56",
+    "TIME": 583563,
+    "CHIP_ID": 39040,
+    "HW_REV": 2,
+    "CHANNEL": 1,
+    "TB_VALID": 0,
+    "TX_COMPLETE": 0,
+    "DIAGNOSTIC_MODE": 0,
+    "LEVEL": 0
+}
