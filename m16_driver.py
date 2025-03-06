@@ -6,21 +6,6 @@ import logging
 from time import time, sleep
 from typing import Optional, Dict, Any
 
-
-# Known problems TODO:
-# if channel or level is set to close to eachother e.g. (l l) the m16 will interperet it as 2 bytes to be sent
-# may be alittlebit complicated
-# In the report levels are displayes and numbers 0-3 not levels 1-4 / L1-L4 as in docs, see: 
-# https://docs.waterlinked.com/modem-m16/modem-m16-uart-interface/#packet-structure-of-the-diagnostic-report
-# Hva skjer om jeg mister connection når skriptet kjøer
-# Example scripts for 
-#   - setup / initializing
-#   - sending / receiving
-#   - report
-#   - mode change
-# printing when requesting repot
-
-
 class M16:
     """
     Library for controlling the M16 modem.
@@ -191,20 +176,9 @@ class M16:
             Dict[str, Any]: The decoded report if successful; otherwise, None.
         """
         # Send the report request.
-        self.logger.debug("starting to get report")
         self.get_report()
-        self.logger.debug("done get report")
-        
-        # start_time = time()
-        # packet = None
-        # while time() - start_time < overall_timeout:
-        #     til = time() - start_time
-        #     self.logger.debug(f"hello from request_report while loop, time in loop: {til}")
         packet = self.read_packet()
         self.logger.debug(f"Found a packet of length: {len(str(packet))} -> {str(packet)}")
-            # if packet is not None and len(packet) > 2:
-            #     self.logger.debug(f"found packet: {str(packet)}, breaking")
-            #     break
 
         if packet is None:
             self.logger.info("No valid packet received.")
@@ -314,12 +288,7 @@ class M16:
         start_time = time()
         timeout_duration = 2  # seconds to wait for a valid packet
 
-        # TODO: Fix this
         while time() - start_time < timeout_duration:
-        # x = True
-        # while x:
-            # x = False
-            # self.logger.debug(f"time in read_packet loop: {time()-start_time}")
             if self.ser.in_waiting:
                 data = self.ser.read(self.ser.in_waiting)
                 buffer += data
@@ -410,5 +379,5 @@ if __name__ == "__main__":
     # Initialize modem on COM4 with diagnostic mode disabled.
     m = M16("COM4", diagnostic=False)
     # m.send_msg("Hello, this is a longer message.")
-    # m.request_report("report.docx")
+    # m.request_report("report.json")
     m.set_channel(1)

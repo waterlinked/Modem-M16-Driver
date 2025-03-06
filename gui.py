@@ -32,7 +32,7 @@ class M16GUI(tk.Tk):
             row=0, column=0, padx=5, pady=5, sticky="w"
         )
         self.port_entry = ttk.Entry(conn_frame, width=12)
-        self.port_entry.insert(0, "COM4")
+        self.port_entry.insert(0, "COM3")
         self.port_entry.grid(row=0, column=1, padx=5, pady=5, sticky="w")
 
         self.connect_button = ttk.Button(
@@ -202,8 +202,8 @@ class M16GUI(tk.Tk):
         port = self.port_entry.get().strip()
 
         logger.debug(f"Starting init modem")
-        # self.modem = M16(port, channel=1, level=4, diagnostic=False)
-        self.modem = M16(port)
+        self.modem = M16(port, channel=1, level=4, diagnostic=False)
+        # self.modem = M16(port)
         logger.debug(f"Done init modem")
         self.log_message(f"Connected to {port}")
         self.after(0, lambda: self.status_label.config(text="Connected", foreground="green"))
