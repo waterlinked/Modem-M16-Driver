@@ -158,7 +158,7 @@ class M16:
         self.send_data('r')
         sleep(1)
         self.send_data('r')
-        # sleep(1)
+        sleep(1)
 
     def request_report(self, filename: Optional[str] = None, overall_timeout: float = 5.0) -> Dict[str, Any] | None:
         """
@@ -211,7 +211,7 @@ class M16:
         """
         self.channel = report.get("CHANNEL", self.channel)
         self.level = 4 - report.get("LEVEL", self.level)
-        self.diagnostic = (report.get("DIAGNOSTIC_MODE", 0) == 1)
+        self.diagnostic = bool(report.get("DIAGNOSTIC_MODE", 0))
         self.logger.debug(f"State updated: channel={self.channel}, level={self.level}, diagnostic={self.diagnostic}")
 
 
@@ -295,8 +295,8 @@ class M16:
                 self.logger.debug(f"Buffer length: {len(buffer)}, buffer: {str(buffer)}")
 
             if b'$' in buffer and b'\n' in buffer:
-                start_index = buffer.find(b'$')
-                end_index = buffer.find(b'\n', start_index)
+                start_index = buffer.rfind(b'$')
+                end_index = buffer.rfind(b'\n', start_index)
                 packet = buffer[start_index:end_index + 1]
                 if len(packet) == self.PACKET_LENGTH:
                     self.logger.debug(f"Returning packet: {str(packet)}")
