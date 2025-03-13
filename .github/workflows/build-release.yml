@@ -1,5 +1,4 @@
 name: Build and Auto-Release EXE
-
 on: [push]
 
 jobs:
