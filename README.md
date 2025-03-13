@@ -17,7 +17,10 @@ from the report. For more information please visit the
 
 
 
-### App.exe
+### gui.exe
+**This executable** can be found by opening the newest release from github, only the `gui.exe` needs to be downloaded 
+and the author needs to be trusted (alternatively compile your own .exe as descried in `README_developers.md`).
+
 This executable facilitates easy verification of the working of the modem, it also highlights some features of the modem
 and is a good starting point to get to know the functionality of the modem without Python. The app is a tkinter app 
 that communicates with the modem through `m16_driver.py`.
