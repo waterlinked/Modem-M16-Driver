@@ -32,8 +32,8 @@ This is an example file that shows what a report decoded with the `M16.decode_pa
 - [requirements.txt](requirements.txt)
 
 ## Installation
-The driver and app has been developed with python3.10. In order to run the scripts Python must be installed this can 
-either be done with the link in the Recuirements section or from the widows store. venv is standard in Pyhton3.10 on Windows but on linux the user may have to install it, that can be done with the command:
+The driver and app has been developed with python3.10. In order to run the scripts Python must be installed, this can 
+either be done with the link in the Recuirements section or from the windows store. venv is standard in Pyhton3.10 on Windows but on linux the user may have to install it, that can be done with the command:
 
 ```
 sudo apt update

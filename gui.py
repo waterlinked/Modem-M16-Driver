@@ -20,7 +20,10 @@ class M16GUI(tk.Tk):
         self.filename = None
         self.create_widgets()
 
-    def create_widgets(self):
+    def create_widgets(self) -> None:
+        """
+        Create the layout of the GUI app
+        """
         # Create a ttk style for caption labels
         style = ttk.Style()
         style.configure("Custom.TLabelframe.Label", font=("Helvetica", 11, "bold"))
@@ -50,13 +53,13 @@ class M16GUI(tk.Tk):
         logo_frame.grid(row=0, column=0, padx=5, pady=5, sticky="nw")
         
         # Load and scale the logo image
-        logo = PhotoImage(file="3-2-2_inverted_logo_waterlinked.png")
+        logo = PhotoImage(file="media/3-2-2_inverted_logo_waterlinked.png")
         scale_factor = 17  # Adjust as needed
         logo_small = logo.subsample(scale_factor, scale_factor)
         
         # Create a label for the logo and place it in the logo_frame
         self.logo_label = ttk.Label(logo_frame, image=logo_small)
-        self.logo_label.image = logo_small  # Keep a reference!
+        self.logo_label.image = logo_small
         self.logo_label.grid(row=0, column=0)
 
 
@@ -159,17 +162,29 @@ class M16GUI(tk.Tk):
         self.log_text = ScrolledText(output_frame, state="disabled", height=20)
         self.log_text.pack(padx=5, pady=5, fill="both", expand=True)
 
-    def handle_report_file_focus_in(self, event):
+    def handle_report_file_focus_in(self, event: tk.Event) -> None:
+        """
+        Delete and change the color of the example text when the user selects the field to edit save file.
+        """
         if self.report_file_entry.get() == "Example: report.json":
             self.report_file_entry.delete(0, tk.END)
             self.report_file_entry.config(foreground="black")
 
-    def handle_report_file_focus_out(self, event):
+    def handle_report_file_focus_out(self, event: tk.Event) -> None:
+        """
+        Populate the report file field with the example text if the user did not specify a save file.
+        """
         if not self.report_file_entry.get():
             self.report_file_entry.insert(0, "Example: report.json")
             self.report_file_entry.config(foreground="grey")
 
-    def log_message(self, message):
+    def log_message(self, message: str):
+        """
+        Log a given message to the oputput field.
+
+        Parameters:
+            message (str): The message to log to the output log.
+        """
         def append():
             self.log_text.config(state="normal")
             self.log_text.insert("end", message + "\n")
@@ -177,14 +192,13 @@ class M16GUI(tk.Tk):
             self.log_text.config(state="disabled")
         self.after(0, append)
 
-    def update_state_display(self):
-        """Update the Current State label using the modem's internal state.
-        Remap level: internal 0->4, 1->3, 2->2, 3->1."""
+    def update_state_display(self) -> None:
+        """
+        Update the Current State label using the modem's internal state.
+        """
         if self.modem is not None:
             ch = self.modem.channel if self.modem.channel is not None else "Unknown"
-            # TODO: this should not be nessesary, state updater in M16 is not correct?
             if self.modem.level is not None:
-                # lv = 4 - self.modem.level
                 lv = self.modem.level
             else:
                 lv = "Unknown"
@@ -198,22 +212,26 @@ class M16GUI(tk.Tk):
         state_text = f"Channel: {ch}   Level: {lv}   Mode: {mode}"
         self.after(0, lambda: self.state_label.config(text=state_text))            
 
-    def connect_modem(self):
+    def connect_modem(self) -> None:
+        """
+        Connect to the modem and update the modem states shown in the GUI app.
+        """
         port = self.port_entry.get().strip()
 
         logger.debug(f"Starting init modem")
         self.modem = M16(port, channel=1, level=4, diagnostic=False)
-        # self.modem = M16(port)
         logger.debug(f"Done init modem")
         self.log_message(f"Connected to {port}")
         self.after(0, lambda: self.status_label.config(text="Connected", foreground="green"))
         self.update_state_display()
-        # TODO: update mode
         logger.debug(f"Starting thread: monitor_received_packets")
         threading.Thread(target=self.monitor_received_packets, daemon=True).start()
 
 
-    def set_channel(self):
+    def set_channel(self) -> None:
+        """
+        Set the modem channel to the one specified by the user.
+        """
         if not self.modem:
             self.log_message("Modem not connected.")
             return
@@ -233,7 +251,10 @@ class M16GUI(tk.Tk):
         logger.debug(f"Starting thread set_channel")
         threading.Thread(target=task, daemon=True).start()
 
-    def set_level(self):
+    def set_level(self) -> None:
+        """
+        Set the modem power level to the one specified by the user.
+        """
         if not self.modem:
             self.log_message("Modem not connected.")
             return
@@ -254,7 +275,10 @@ class M16GUI(tk.Tk):
         logger.debug(f"Starting thread set_level")
         threading.Thread(target=task, daemon=True).start()
 
-    def toggle_mode(self):
+    def toggle_mode(self) -> None:
+        """
+        Toggle the modem between transparent and diagnostic mode.
+        """
         if not self.modem:
             self.log_message("Modem not connected.")
             return
@@ -281,7 +305,10 @@ class M16GUI(tk.Tk):
         logger.debug(f"Starting thread toggle_mode")
         threading.Thread(target=task, daemon=True).start()
 
-    def open_diagnostic_window(self):
+    def open_diagnostic_window(self) -> None:
+        """
+        Open the diagnostic window and continously print diagnostic reports as they are recieved.
+        """
         if self.diag_window is not None:
             return
         self.diag_window = tk.Toplevel(self)
@@ -292,7 +319,10 @@ class M16GUI(tk.Tk):
         logger.debug(f"Starting thread diganostic window")
         threading.Thread(target=self.monitor_received_packets, daemon=True).start()
 
-    def on_diag_window_closed(self):
+    def on_diag_window_closed(self) -> None:
+        """
+        Close and change the modem mode when the diagnostic window is closed.
+        """
         if self.diag_window is not None:
             self.diag_window.destroy()
             self.diag_window = None
@@ -300,7 +330,7 @@ class M16GUI(tk.Tk):
         if self.modem and self.modem.diagnostic:
             self.toggle_mode()
 
-    def monitor_received_packets(self):
+    def monitor_received_packets(self) -> None:
         """
         Continuously read from the modem and log received data.
         If the returned buffer is exactly 2 bytes, decode them as ASCII
@@ -309,12 +339,14 @@ class M16GUI(tk.Tk):
         while self.modem:
             packet = self.modem.read_packet()
             if packet:
+                # Handle recieved 2 bytes 
                 if len(packet) == 2:
                     try:
                         text = packet.decode('ascii', errors='replace')
                     except Exception as e:
                         text = packet.hex()
                     self.after(0, lambda: self.log_message("Received bytes: " + text))
+                # Handle everything else as a potential report
                 else:
                     report = self.modem.decode_packet(packet)
                     if report:
@@ -331,20 +363,29 @@ class M16GUI(tk.Tk):
                         self.update_state_display()
                         report_str = json.dumps(
                             report, indent=4, default=self.modem._default_converter
-                        )                            
-                        self.log_message("Report received:")
-                        self.log_message(report_str)
-                        
-                        if self.filename is not None:
-                            self.log_message(f"Report Saved to {self.filename}")
-                            with open(self.filename, "w") as f:
-                                json.dump(report, f, indent=4, default=self.modem._default_converter)
+                        )
+                        # Do not print to output log if in diagnostic
+                        if self.modem.diagnostic != True:
+                            self.log_message("Report received:")
+                            self.log_message(report_str)
+
+                            # Do not save report when in diagnostic
+                            if self.filename is not None:
+                                self.log_message(f"Report Saved to {self.filename}")
+                                with open(self.filename, "w") as f:
+                                    json.dump(report, f, indent=4, default=self.modem._default_converter)
 
                         self.after(0, lambda: self.append_diag_text(report_str))
             else:
                 time.sleep(0.1)
 
-    def append_diag_text(self, text):
+    def append_diag_text(self, text: str):
+        """
+        Add the text to the diagnostic, ensuring it remains scrollable and disabling user edits.
+
+        Parameters:
+            text (str): Diagnostic report to be displayed to the user.
+        """
         if self.diag_window is None:
             return
         self.diag_text.config(state="normal")
@@ -352,8 +393,10 @@ class M16GUI(tk.Tk):
         self.diag_text.see("end")
         self.diag_text.config(state="disabled")
 
-    def read_response(self):
-        """Attempt to read available data from the modem (regardless of mode)."""
+    def read_response(self) -> (str | None):
+        """
+        Attempt to read available data from the modem (regardless of mode).
+        """
         if self.modem:
             if self.modem.ser.in_waiting:
                 try:
@@ -363,7 +406,11 @@ class M16GUI(tk.Tk):
                     self.log_message(f"Error reading response: {e}")
         return None
 
-    def send_two_bytes(self):
+    def send_two_bytes(self) -> None:
+        """
+        Send two bytes from the modem using the function from the driver while adding user feedback to the 
+        output log.
+        """
         if not self.modem:
             self.log_message("Modem not connected.")
             return
@@ -385,7 +432,11 @@ class M16GUI(tk.Tk):
         logger.debug(f"Starting thread send_two_bytes")
         threading.Thread(target=task, daemon=True).start()
 
-    def send_message(self):
+    def send_message(self) -> None:
+        """
+        Send a message (more than two bytes) from the modem using the function from the driver 
+        while adding user feedback to the output log.
+        """
         if not self.modem:
             self.log_message("Modem not connected.")
             return
@@ -409,7 +460,10 @@ class M16GUI(tk.Tk):
         logger.debug(f"Starting thread send_message")
         threading.Thread(target=task, daemon=True).start()
 
-    def request_report(self):
+    def request_report(self) -> None:
+        """
+        Request a report using the driver function and show it in the output log.
+        """
         if not self.modem:
             self.log_message("Modem not connected.")
             return
