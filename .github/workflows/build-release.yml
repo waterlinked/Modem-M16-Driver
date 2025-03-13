@@ -1,0 +1,71 @@
+name: Build and Auto-Release EXE
+
+on:
+  push:
+    branches:
+      - main  # Runs only on pushes to main
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install Dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pyinstaller==6.12.0
+
+      - name: Build EXE with PyInstaller
+        run: pyinstaller --onefile gui.py
+
+      - name: Wait for EXE and Move
+        shell: pwsh
+        run: |
+          while (-not (Test-Path "dist/gui.exe")) { Start-Sleep -Seconds 1 }
+          mv dist/gui.exe gui.exe -Force
+
+      - name: Cleanup Unwanted Files
+        shell: pwsh
+        run: |
+          Remove-Item -Recurse -Force build, dist, gui.spec
+
+      - name: Upload EXE as Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: built-exe
+          path: gui.exe
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Download Built EXE
+        uses: actions/download-artifact@v3
+        with:
+          name: built-exe
+
+      - name: Get Current Date
+        id: date
+        run: echo "TAG_NAME=$(date +'%Y.%m.%d-%H%M')" >> $GITHUB_ENV
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ env.TAG_NAME }}
+          name: Release ${{ env.TAG_NAME }}
+          draft: false
+          prerelease: false
+          files: gui.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
