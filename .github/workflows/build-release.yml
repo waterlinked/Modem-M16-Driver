@@ -1,9 +1,6 @@
 name: Build and Auto-Release EXE
 
-on:
-  push:
-    branches:
-      - main
+on: [push]
 
 jobs:
   build:
@@ -46,7 +43,6 @@ jobs:
   release:
     needs: build
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -56,17 +52,15 @@ jobs:
         with:
           name: built-exe
 
-      - name: Bump Version and Create Tag
-        id: tag
-        uses: anothrNick/github-tag-action@v1.60.0
-        with:
-          args: --default_bump patch --tag_prefix v
+      - name: Get Current Date
+        id: date
+        run: echo "TAG_NAME=$(date +'%Y.%m.%d-%H%M')" >> $GITHUB_ENV
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ steps.tag.outputs.new_tag }}
-          name: Release ${{ steps.tag.outputs.new_tag }}
+          tag_name: ${{ env.TAG_NAME }}
+          name: Release ${{ env.TAG_NAME }}
           draft: false
           prerelease: false
           files: gui.exe
