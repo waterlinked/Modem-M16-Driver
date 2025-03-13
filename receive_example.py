@@ -1,6 +1,6 @@
 from m16_driver import M16
 
-PORT = input("Please input the port where the modem i connected: ")
+PORT = input("Please input the port where the modem is connected (e.g. COM3 or /dev/ttyUSB0): ")
 
 CHANNEL = 1
 POWER_LEVEL = 4
@@ -13,4 +13,4 @@ print(f"Starting loop, \nexit with ctrl + c")
 while True:
     packet = modem.read_packet()
     if packet is not None:    
-        print(f"Recieved: {str(packet)}")
+        print(f"Received: {str(packet)}")
