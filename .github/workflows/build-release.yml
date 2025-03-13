@@ -1,9 +1,6 @@
 name: Build and Auto-Release EXE
 
-on:
-  push:
-    branches:
-      - main  # Runs only on pushes to main
+on: [push]
 
 jobs:
   build:
@@ -21,7 +18,7 @@ jobs:
       - name: Install Dependencies
         run: |
           pip install -r requirements.txt
-          pip install pyinstaller==6.12.0
+          pip install pyinstaller
 
       - name: Build EXE with PyInstaller
         run: pyinstaller --onefile gui.py
@@ -38,7 +35,7 @@ jobs:
           Remove-Item -Recurse -Force build, dist, gui.spec
 
       - name: Upload EXE as Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: built-exe
           path: gui.exe
@@ -51,7 +48,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Download Built EXE
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: built-exe
 
