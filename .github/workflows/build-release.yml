@@ -1,9 +1,6 @@
 name: Build and Auto-Release EXE
 
-on:
-  push:
-    branches:
-      - main  # Runs on push to main
+on: [push]
 
 jobs:
   build:
@@ -58,10 +55,9 @@ jobs:
 
       - name: Bump Version and Create Tag
         id: tag
-        uses: anothrNick/github-tag-action@v1
+        uses: anothrNick/github-tag-action@v1.60.0
         with:
-          default_bump: patch    # Change to minor or major if needed
-          tag_prefix: "v"
+          args: --default_bump patch --tag_prefix v
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
