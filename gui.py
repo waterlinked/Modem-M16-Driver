@@ -90,8 +90,8 @@ class M16GUI(tk.Tk):
         )
         self.set_channel_button.grid(row=0, column=2, padx=5, pady=5)
 
-        # Set Level (displayed as 1-4 after remapping)
-        ttk.Label(ctrl_frame, text="Set Level (1-4):").grid(
+        # Set Power Level (displayed as 1-4 after remapping)
+        ttk.Label(ctrl_frame, text="Set Power Level (1-4):").grid(
             row=1, column=0, padx=5, pady=5, sticky="w"
         )
         self.level_spin = ttk.Spinbox(ctrl_frame, from_=1, to=4, width=5)
