@@ -1,4 +1,5 @@
 from m16_driver import M16
+from time import sleep
 
 PORT = "COM3"   # This may vary on operating system and where the modem is connected
 CHANNEL = 1
@@ -16,8 +17,16 @@ report = modem.request_report()
 print(report)
 
 # Send two bytes with the modem
-msg = 'Hi'
-modem.send_two_bytes(msg)
+two_buytes = 'Hi'
+modem.send_two_bytes(two_buytes)
+print(f"Sendt {two_buytes} on channel {CHANNEL}")
+
+# Give the modem time to send the two bytes before sending a new message
+sleep(1)
+
+# Send a longer message with the modem
+msg = 'Hello from underwater'
+modem.send_msg(msg)
 print(f"Sendt {msg} on channel {CHANNEL}")
 
 # Close the modem
