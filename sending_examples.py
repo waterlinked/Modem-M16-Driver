@@ -1,7 +1,8 @@
 from m16_driver import M16
 from time import sleep
 
-PORT = "COM3"   # This may vary on operating system and where the modem is connected
+PORT = input("Please input the port where the modem i connected: ")
+
 CHANNEL = 1
 POWER_LEVEL = 4
 DIAGNOSTIC_MODE = False
